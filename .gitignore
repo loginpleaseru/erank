@@ -1,0 +1,6 @@
+# data and working files written by the notebooks
+data/
+runs/
+.ipynb_checkpoints/
+__pycache__/
+.venv/

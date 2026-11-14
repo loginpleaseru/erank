@@ -136,7 +136,7 @@ pre.env { margin: 0; font: 400 var(--step--1)/1.5 var(--font-mono); white-space:
 <p class="eyebrow file">Разбор ноутбука · 03_vit.ipynb</p>
 <h1>Ширины слоёв по эффективному рангу: ViT-Tiny на CIFAR-10</h1>
 <p class="lede">Годится ли эффективный ранг для выбора ширин скрытых слоёв MLP в ViT-Tiny на CIFAR-10 — лучше ли он равномерного сужения и Taylor при том же бюджете?</p>
-<div class="actions"><a class="btn primary" href="../read/03_vit.html">Ноутбук целиком (HTML)</a><a class="btn" href="../03_vit.ipynb" download>Файл .ipynb</a></div>
+<div class="actions"><a class="btn primary" href="../03_vit.ipynb" download>Файл .ipynb</a></div>
 <nav class="toc" aria-label="На странице"><a href="#what">Что делает</a><a href="#result">Главный результат</a><a href="#figures">Рисунки</a><a href="#limits">Ограничения</a><a href="#reproduce">Как повторить</a></nav>
 </header>
 <main>
@@ -316,7 +316,7 @@ pre.env { margin: 0; font: 400 var(--step--1)/1.5 var(--font-mono); white-space:
 <div class="prose md"><p><strong>Полный прогон:</strong> около 5 ч на одной GPU уровня RTX 5070 Ti (≈ 40 обучений по 100 эпох, ~6 мин каждое). Каждый законченный прогон дописывается в <code>runs/03_vit.jsonl</code> (сети — в <code>runs/ckpt/03_vit/</code>), ход виден в <code>runs/03_vit.log</code>; повторный запуск продолжает с места остановки, а не обучает заново. Ключ прогона содержит ширины, сид и число эпох, но не остальные константы (lr, доли чувствительности, размеры подвыборок): после их изменения удалите <code>runs/03_vit.jsonl</code> и <code>runs/ckpt/03_vit/</code>.</p><p><strong>Быстрая проверка:</strong> <code>QUICK = True</code> в первой ячейке кода — 1 сид, 1 эпоха, 2048 обучающих и 1000 валидационных картинок, все ячейки и графики за несколько минут; числа в этом режиме смысла не имеют.</p><p><strong>Данные:</strong> CIFAR-10 в формате torchvision (<code>cifar-10-batches-py/</code>) в <code>data/</code> рядом с файлом или уровнем выше (<code>../data/</code>). Ничего не скачивается (<code>DOWNLOAD = False</code>). Валидация — 5000 картинок из обучающей выборки (фиксированная перестановка), тест используется только для итоговой точности каждой сети.</p></div>
 <p>Первая строка ячейки настроек в этом прогоне: <code>QUICK = False  # True — быстрая проверка всех ячеек (1 сид, 1 эпоха, подвыборка)</code></p>
 <pre class="env">torch 2.12.1+cu130, python 3.13.13, device cuda (NVIDIA GeForce RTX 5070 Ti)</pre>
-<p class="run">Полный прогон: 10 ч 38 мин (GPU делили с другими ноутбуками набора; в одиночку примерно вдвое быстрее). <a href="../read/03_vit.html">Ноутбук целиком</a> · <a href="../03_vit.ipynb" download>.ipynb</a> · <a href="index.html">все разборы</a></p>
+<p class="run">Полный прогон: 10 ч 38 мин (GPU делили с другими ноутбуками набора; в одиночку примерно вдвое быстрее). <a href="../03_vit.ipynb" download>.ipynb</a> · <a href="index.html">все разборы</a></p>
 </footer>
 </div>
 </body>
