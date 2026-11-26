@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="color-scheme" content="light dark"><meta name="description" content="Гипотезы, эксперименты, результаты и выводы выполненных ResNet-18 и ViT-Tiny."><title>Erank full: разборы выполненных экспериментов</title><style>
+:root {
+  --bg: #f4f6f9; --surface: #fcfcfd; --ink: #121720; --ink-2: #4a5262; --muted: #747d8d;
+  --rule: #dde2ea; --accent: #4a3aa7; --accent-soft: #ebe8f8; --warn-bg: #fff4dc; --warn-ink: #6b4a00;
+  --paper: #fcfcfb; --paper-rule: #dde2ea;
+  --font-display: "IBM Plex Sans Condensed", "Arial Narrow", system-ui, sans-serif;
+  --font-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+  --step--1: 0.8125rem; --step-0: 1rem; --step-1: 1.1875rem; --step-2: 1.5rem; --step-3: 2.125rem;
+  --radius: 6px;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e1014; --surface: #161a20; --ink: #eef1f5; --ink-2: #b6bdc9; --muted: #8790a0;
+    --rule: #2a3039; --accent: #9085e9; --accent-soft: #24213d; --warn-bg: #2e2510; --warn-ink: #f2cf7a;
+    --paper-rule: #3a414c;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e1014; --surface: #161a20; --ink: #eef1f5; --ink-2: #b6bdc9; --muted: #8790a0;
+  --rule: #2a3039; --accent: #9085e9; --accent-soft: #24213d; --warn-bg: #2e2510; --warn-ink: #f2cf7a;
+  --paper-rule: #3a414c;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 400 var(--step-0)/1.6 var(--font-body);
+  padding: 0 16px 64px; overflow-wrap: break-word; }
+.page { max-width: 980px; margin-inline: auto; display: grid; gap: 44px; }
+.page > * { min-width: 0; }
+main { display: grid; gap: 52px; min-width: 0; }
+section { display: grid; gap: 16px; min-width: 0; scroll-margin-top: 16px; }
+h1, h2, h3 { font-family: var(--font-display); font-weight: 600; text-wrap: balance; margin: 0; line-height: 1.15; }
+h1 { font-size: clamp(1.6rem, 1.1rem + 2.6vw, var(--step-3)); letter-spacing: -0.01em; }
+h2 { font-size: var(--step-2); padding-top: 4px; }
+h3 { font-size: var(--step-1); }
+p { margin: 0; }
+a { color: var(--accent); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible, .scroll-x:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+code { font-family: var(--font-mono); font-size: 0.9em; overflow-wrap: anywhere; }
+.prose { max-width: 72ch; }
+.md > * + * { margin-top: 0.7em; }
+.md ul, .md ol { margin: 0; padding-left: 1.25em; }
+.md li + li { margin-top: 0.35em; }
+.eyebrow { font: 500 var(--step--1)/1.3 var(--font-mono); text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--muted); margin: 0; }
+.eyebrow.file { text-transform: none; letter-spacing: 0.02em; }
+.eyebrow .run-note { font-family: var(--font-body); font-weight: 400; letter-spacing: 0; }
+.muted { color: var(--ink-2); }
+.src-note { font-size: var(--step--1); color: var(--muted); max-width: 72ch; }
+header.top { display: grid; gap: 12px; padding-top: 28px; padding-bottom: 24px; border-bottom: 1px solid var(--rule); }
+nav.crumbs { display: flex; flex-wrap: wrap; gap: 4px 14px; font: 500 var(--step--1)/1.5 var(--font-mono); }
+nav.crumbs a { color: var(--muted); text-decoration: none; }
+nav.crumbs a:hover { color: var(--ink); text-decoration: underline; }
+nav.crumbs a[aria-current="page"] { color: var(--ink); text-decoration: underline; text-decoration-color: var(--accent);
+  text-decoration-thickness: 2px; }
+.lede { font-size: var(--step-1); color: var(--ink-2); max-width: 62ch; }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+.btn { display: inline-flex; align-items: center; min-height: 36px; padding: 6px 14px; border-radius: 999px;
+  border: 1px solid var(--rule); background: var(--surface); color: var(--ink); text-decoration: none;
+  font-size: var(--step--1); font-weight: 500; }
+.btn:hover { border-color: var(--accent); }
+.btn.primary { background: var(--accent-soft); border-color: var(--accent); }
+nav.toc { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: var(--step--1); color: var(--muted); }
+.warn { background: var(--warn-bg); color: var(--warn-ink); border-radius: var(--radius); padding: 12px 14px;
+  font-size: var(--step--1); }
+dl.facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1px; margin: 0;
+  background: var(--rule); border: 1px solid var(--rule); border-radius: var(--radius); overflow: hidden; }
+dl.facts > div { background: var(--surface); padding: 10px 12px; display: grid; gap: 2px; min-width: 0; }
+dl.facts dt { font-size: var(--step--1); color: var(--ink-2); }
+dl.facts dd { margin: 0; font: 500 var(--step-0)/1.35 var(--font-mono); font-variant-numeric: tabular-nums; }
+dl.facts .fact-note { display: block; margin-top: 2px; font: 400 var(--step--1)/1.35 var(--font-body); color: var(--ink-2); }
+ol.steps { list-style: none; margin: 0; padding: 0; background: var(--surface); border: 1px solid var(--rule);
+  border-radius: var(--radius); }
+ol.steps li { display: grid; grid-template-columns: 9.5rem minmax(0, 1fr); gap: 4px 14px; padding: 9px 14px;
+  border-top: 1px solid var(--rule); font-size: 0.95rem; line-height: 1.5; }
+ol.steps li:first-child { border-top: 0; }
+ol.steps .k { font: 600 var(--step--1)/1.6 var(--font-mono); color: var(--accent); }
+.result { display: grid; gap: 14px; background: var(--surface); border: 1px solid var(--rule);
+  border-left: 3px solid var(--accent); border-radius: var(--radius); padding: 16px 18px; min-width: 0; }
+.result > * { min-width: 0; }
+.tcap { font-weight: 600; font-size: var(--step--1); color: var(--ink-2); margin-bottom: -8px; }
+.scroll-x { overflow-x: auto; max-width: 100%; border: 1px solid var(--rule); border-radius: 4px; background: var(--bg); }
+table.data { border-collapse: collapse; font-size: var(--step--1); line-height: 1.4; min-width: 100%; }
+table.data th, table.data td { padding: 6px 10px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+table.data tbody tr:last-child > * { border-bottom: 0; }
+table.data thead th { color: var(--muted); font-weight: 500; text-align: right; white-space: nowrap; }
+table.data thead th[colspan] { text-align: center; color: var(--ink); }
+table.data tbody th { text-align: left; font-weight: 500; color: var(--ink); min-width: 9rem; }
+table.data td { text-align: right; white-space: nowrap; font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+table.data tr > td:first-child, table.data thead th:first-child { text-align: left; }
+.figs { display: grid; gap: 40px; }
+figure.fig { margin: 0; display: grid; gap: 10px; min-width: 0; }
+.fig-head { display: grid; gap: 4px; }
+.paper { background: var(--paper); border: 1px solid var(--paper-rule); border-radius: var(--radius); padding: 6px; }
+.paper img { display: block; max-width: 100%; height: auto; margin-inline: auto; }
+figure.fig figcaption { max-width: 76ch; color: var(--ink-2); font-size: 0.95rem; }
+figure.fig figcaption b { color: var(--ink); }
+details.takeaway { border-top: 1px dashed var(--rule); padding-top: 8px; max-width: 76ch; }
+details.takeaway summary { cursor: pointer; color: var(--accent); font-size: var(--step--1); font-weight: 500; }
+details.takeaway .md { margin-top: 8px; font-size: 0.95rem; }
+ul.limits { margin: 0; padding-left: 1.2em; max-width: 76ch; display: grid; gap: 8px; }
+footer.bottom { border-top: 1px solid var(--rule); padding-top: 20px; display: grid; gap: 14px; color: var(--ink-2);
+  font-size: 0.95rem; scroll-margin-top: 16px; }
+footer.bottom h2 { color: var(--ink); }
+footer.bottom .run { font-size: var(--step--1); color: var(--muted); }
+pre.env { margin: 0; font: 400 var(--step--1)/1.5 var(--font-mono); white-space: pre-wrap; overflow-wrap: anywhere;
+  color: var(--muted); }
+.cards { display: grid; gap: 16px; }
+.card { background: var(--surface); border: 1px solid var(--rule); border-radius: var(--radius); padding: 18px;
+  display: grid; gap: 10px; min-width: 0; }
+.card h2 { font-size: var(--step-1); }
+.card h2 a { color: var(--ink); text-decoration: none; }
+.card h2 a:hover { text-decoration: underline; text-decoration-color: var(--accent); }
+@media (max-width: 560px) {
+  ol.steps li { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .result { padding: 12px; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+
+html { scroll-behavior: smooth; }
+.page, main, section, header.top, .chapter-block, figure.fig, .fig-head { grid-template-columns:minmax(0,1fr); }
+.page { width:100%; }
+header.top > *, section > *, .chapter-block > * { min-width:0; }
+.eyebrow.file { overflow-wrap:anywhere; }
+.scroll-x { width:100%; min-width:0; }
+.chapter-block { display:grid; gap:8px; }
+.chapter-block h3 { font-size:1rem; line-height:1.4; color:var(--accent); }
+.chapter-block p, .chapter-block ul { max-width:78ch; }
+.chapter-block ul { margin:0; padding-left:1.3em; }
+.chapter-block li + li { margin-top:.4em; }
+.table-note { font-size:.85rem; color:var(--ink-2); max-width:80ch; }
+.status { font-weight:600; }
+.appendix { display:grid; gap:18px; }
+.appendix details { min-width:0; }
+.appendix summary { cursor:pointer; font-weight:600; padding:8px 0; }
+.appendix details > div { margin-top:8px; }
+.scroll-x { scrollbar-gutter:stable; }
+table.data caption { padding:9px 10px; text-align:left; font:500 .9rem/1.4 var(--font-body); color:var(--ink-2); }
+@media print { body { background:white; color:black; } .page { max-width:none; } nav, .actions { display:none!important; } section, figure { break-inside:avoid; } .scroll-x { overflow:visible; } }
+
+.comparison table.data td { white-space:normal; font-family:var(--font-body); min-width:18rem; text-align:left; }
+.comparison table.data th { min-width:12rem; }
+</style></head><body><div class="page"><nav class="crumbs" style="padding-top:24px" aria-label="Разборы ноутбуков"><a href="index.html" aria-current="page">Обзор прогонов</a><a href="01_resnet18_erank_full.html">ResNet-18</a><a href="02_vit_erank_full.html">ViT-Tiny</a><a href="../explain/index.html">Предыдущая серия</a></nav><header class="top"><p class="eyebrow">Два выполненных исследования · erank_full</p><h1>Снижение размерности по erank: гипотезы и результаты</h1><p class="lede">Разборы ResNet-18 и ViT-Tiny на CIFAR-10. В каждой главе: эксперимент, проверяемая гипотеза, числа сохранённого прогона и вывод с ограничениями.</p><nav class="toc" aria-label="На странице"><a href="#reports">Разборы</a><a href="#comparison">Результаты по гипотезам</a><a href="#reading">Как читать</a></nav></header><main><section id="reports"><h2>Разборы выполненных ноутбуков</h2><div class="cards">
+<article class="card"><p class="eyebrow file">01_resnet18_erank_full.ipynb · 30 эпох · 3 сида</p><h2><a href="01_resnet18_erank_full.html">ResNet-18: ресурс меняет результат сравнения</a></h2><p>При 25% параметров L2 даёт 92,037%, centered erank — 91,420%, uniform — 91,223%, но L2 требует в 1,87 раза больше MACs, чем erank. При 25% MACs erank выше Taylor и Slimming; выигрыш над uniform не установлен. Дообучение бывает полезнее scratch.</p><div class="actions"><a class="btn primary" href="01_resnet18_erank_full.html">Разбор восьми глав</a><a class="btn" href="01_resnet18_erank_full.ipynb" download>Выполненный .ipynb</a></div></article>
+<article class="card"><p class="eyebrow file">02_vit_erank_full.ipynb · 100 эпох · 3 сида</p><h2><a href="02_vit_erank_full.html">ViT-Tiny: uniform остаётся сильным ориентиром</a></h2><p>При 50% параметров centered erank даёт 81,600%, uniform — 81,857%. Общего выигрыша erank и его нормировок не показано. Грубое уменьшение всех MLP до 25% ширины даёт 81,857%; FT после удаления нейронов хуже scratch во всех 18 парах без low-rank.</p><div class="actions"><a class="btn primary" href="02_vit_erank_full.html">Разбор восьми глав</a><a class="btn" href="02_vit_erank_full.ipynb" download>Выполненный .ipynb</a></div></article>
+</div></section><section id="comparison" class="comparison"><h2>Какие гипотезы проверены</h2><div class="scroll-x" tabindex="0" role="region" aria-label="Выводы относятся к данным прогонам; статистические интервалы описательные, n=3"><table class="data"><caption>Выводы относятся к данным прогонам; статистические интервалы описательные, n=3</caption><thead><tr><th scope="col">Гипотеза / глава</th><th scope="col">ResNet-18</th><th scope="col">ViT-Tiny</th></tr></thead><tbody><tr><th scope="row">Нормировка даёт лучшую архитектуру · 1/5</th><td>Ранг меняется заметно; единой победившей нормировки нет. Centered выше σ на 0,083 п.п. по парному t95.</td><td>Ранг меняется заметно; общий выигрыш над uniform не показан.</td></tr><tr><th scope="row">Низкий erank означает лёгкий срез · 2</th><td>Умеренная положительная связь: ρ=0,303 с L2-потребностью. PCA мягче удаления координат.</td><td>Связь отрицательная: ρ=−0,560. Первый блок низкоранговый, но чувствительный.</td></tr><tr><th scope="row">Короткий рейтинг предсказывает полный · 4</th><td>Контрпример α=2: слабый короткий результат, наибольшая средняя accuracy direct-серии.</td><td>Screening предпочитает L2-варианты, финальный максимум erank-серии у σ.</td></tr><tr><th scope="row">Erank лучше классики при одном ресурсе · 5</th><td>При params уступает некоторым критериям; при MACs выше Taylor/Slimming; против uniform интервал через ноль.</td><td>Над uniform выигрыша нет; centered выше Taylor в одной params-точке.</td></tr><tr><th scope="row">Прямой k≈erank полезен · 5</th><td>91,800%; выше matched-uniform на 0,763 п.п., превосходство над matched L2/Taylor не показано.</td><td>81,770%; выше matched-uniform на 0,220 п.п., превосходство над matched L2/Taylor не показано.</td></tr><tr><th scope="row">Erank лучше выбирает сжимаемые блоки · 5</th><td>При 50% MACs различия erank/classical/uniform-all не разрешены n=3.</td><td>При 70% params различия не разрешены n=3.</td></tr><tr><th scope="row">Сохранённые веса полезнее scratch · 6</th><td>В обе стороны: FT лучше в 15/24 пар; для Slimming +0,350 п.п. с положительным t95.</td><td>Срез MLP: FT хуже в 18/18 пар. У SVD-инициализации результат неоднозначен.</td></tr><tr><th scope="row">Ранг учителя — окончательная необходимая ширина · 7</th><td>После обучения k≈erank новая сеть имеет меньший erank; неподвижная точка не проверена.</td><td>После scratch ранг также перестраивается; профиль учителя не остаётся неизменным.</td></tr><tr><th scope="row">SVD с rank из erank даёт сильное сжатие · 5/6/8</th><td>Остаётся 58,8% параметров; scratch 91,820%, SVD+FT 91,997%.</td><td>Остаётся 96,0% параметров: фактическое сжатие слабое.</td></tr></tbody></table></div></section><section id="reading"><h2>Как читать результаты</h2><div class="prose md"><p><strong>Эксперимент — не только график.</strong> В каждом разборе указаны контролируемые условия: какие ширины меняются, сохраняются ли веса, что считается ресурсом, на каком split измерен результат. Главы 1–2 описывают спектр и немедленную чувствительность; глава 5 отвечает на вопрос о выборе размерностей после обучения с нуля.</p><p><strong>Accuracy и разница accuracy имеют разные единицы.</strong> 91,420% — точность; +0,197 п.п. — парная разница с uniform. ± в таблице accuracy — SD между seeds. Интервалы t95 считаются по трём парным разницам без поправки на множественные сравнения. Пересечение нуля не доказывает равенство методов.</p><p><strong>Не смешивать бюджеты.</strong> При одинаковых параметрах ResNet может иметь существенно разные MACs. Для ViT параметры и MACs аффинно связаны с суммой MLP-ширин. MLP шириной 25% не означает сеть с 25% общих параметров.</p><p><strong>Срез и scratch проверяют разные вещи.</strong> Низкоранговое представление можно приближать линейными комбинациями каналов; это не гарантирует безопасного удаления такого же числа исходных координат. FT и scratch сравниваются на одинаковых архитектурах, но при разных рецептах и затратах.</p><p><strong>Это фактическая доработанная версия.</strong> В ней все шесть правил erank прошли трёхсидовый тест, Taylor и Taylor/цена разделены, эпохи фиксированы. Объяснения из предыдущей переписки о первоначальном коде не подменяют содержимое этих .ipynb.</p><p><strong>Источники.</strong> Все числа взяты из сохранённых outputs лежащих рядом ноутбуков. Для каждой главы указаны In[n]; внизу страниц доступны исходные pandas-таблицы и SHA-256 файла. Графики — исходные PNG, встроенные без изменения. Строки, скрытые многоточиями pandas, не восстановлены предположениями.</p></div><div class="warn">Полная фактическая длительность серии в сохранённых outputs не указана. PLAN содержит прогноз, а seconds в строках обучения не учитывает все затраты и необязательные паузы. Поэтому прогноз 12–14,5 часа здесь не выдаётся за измеренное время прогона.</div></section></main><footer class="bottom"><p>Оформление соответствует страницам <a href="../explain/index.html">erank/explain</a>. Ноутбуки и предыдущие разборы сохранены без изменений. Каждый новый HTML самодостаточен и открывается локально без сервера.</p></footer></div></body></html>
